@@ -9,6 +9,7 @@ A bare-metal Rust project for the STM32F429I-DISC1 development board. This proje
 
 ## Mascot comments (ASCII art comments)
 
+```
 /***********************************************
 *  (\(\   Sus Bunny says: Welcome to the code! *
 *  ( -.-)  This project is hopping with Rust   *
@@ -58,3 +59,5 @@ A bare-metal Rust project for the STM32F429I-DISC1 development board. This proje
 *   (   )    through the night with no fear!   *
 *   ^^ ^^   Echo-locate those bugs and squash! *
 ***********************************************/
+```
+
