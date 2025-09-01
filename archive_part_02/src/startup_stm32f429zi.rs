@@ -16,9 +16,9 @@ unsafe extern "C" {
 // Interrupt vector table
 #[used]
 #[unsafe(link_section = ".isr_vector")]
-static VECTOR_TABLE: [Option<extern "C" fn()>; 107] = [
+static VECTOR_TABLE: [Option<extern "C" fn()>; 106] = [
     // Initial Stack Pointer (first entry, value provided by linker script)
-    None, // This entry is filled by the linker script with _start_of_stack
+    // This entry is filled by the linker script with _start_of_stack
     // Core Cortex-M Exceptions (Vector Table Position 1-15)
     Some(Reset_Handler),     // Position 1: Reset Handler (our custom entry point)
     Some(NMI_Handler),       // Position 2: Non-Maskable Interrupt

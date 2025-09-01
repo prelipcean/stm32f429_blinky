@@ -141,6 +141,10 @@ Snippet from datasheet for clock speed:
 
 ![STM32F429I-DISC1 Bench Demo](./images/led_pcb.png)
 
+Reference manual
+
+![STM32F429I-DISC1 Bench Demo](./images/reg_GPIOx_MODER.png)
+
 ---
 
 ### 3.7 Writing the Application Logic
