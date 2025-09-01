@@ -9,9 +9,7 @@
 
 use core::panic::PanicInfo;
 
-mod mcu;
-mod app;
-
+mod startup_stm32f429zi; // MCU-specific startup code
 
 /// A global mutable counter incremented in the main loop.
 static mut COUNTER: u32 = 42;

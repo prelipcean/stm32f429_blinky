@@ -1,0 +1,18 @@
+[build]
+# Specify the target for our microcontroller
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+# Linker flags:
+# -C link-arg=-Tmemory.x: Use our custom linker script (memory.x)
+# -C link-arg=-Tdefmt.x: (Optional) If using defmt, this links its data section
+rustflags = [
+    "-C", "link-arg=-Tmemory.x",
+    # Uncomment the line below if you plan to use "defmt" for logging later
+    # "-C", "link-arg=-Tdefmt.x",
+]
+
+# The runner command for "cargo run" and "cargo embed "
+# runner = "cargo embed --chip STM32F429ZIT6"
+# The runner command for "cargo run" and "cargo flash"
+# runner = "cargo flash --chip STM32F429ZI"

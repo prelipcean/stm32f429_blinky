@@ -6,6 +6,7 @@ A bare-metal Rust project for the STM32F429I-DISC1 development board. This proje
 
 - [Part 1: Setting Up Your Rust Environment](./doc/part_01.md)
 - [Part 2: First Bare-Metal Project](./doc/part_02.md)
+- [Part 3: Timer Interrupts and Modular Bare-Metal Rust](./doc/part_03.md)
 
 ## Mascot comments (ASCII art comments)
 
