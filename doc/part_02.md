@@ -1,6 +1,15 @@
-# Part 2: First Bare-Metal Project
+![STM32F429I-DISC1 Bench Demo](./images/flashing_intro.png)
 
-## 2.1 Gathering Essential Documentation
+# Rust for Embedded Systems: A Hands-On Journey with the STM32F429I-DISC1
+
+## Part 2: First Bare-Metal Project
+
+> **Missed Part 1?**  
+> [Click here for Part 1: Prerequisites and Environment Setup](./part_01.md)
+
+---
+
+### 2.1 Gathering Essential Documentation
 
 Before we start writing any bare-metal code for a microcontroller, the absolute first step is to gather and understand the relevant documentation. This is paramount, as bare-metal programming involves direct interaction with hardware, and every register, bit, and clock setting must be configured precisely according to the manufacturer's specifications. Relying on guesswork or outdated examples can lead to frustrating debugging sessions or even hardware damage.
 
@@ -44,6 +53,8 @@ Here is a list of essential documentation and resources for the ARM Cortex-M4 pr
 
 To download ARM documents in PDF format, use the download button shown in the picture below.
 
+![STM32F429I-DISC1 Bench Demo](./images/arm_download_pdf.png)
+
 #### STM32F429ZIT6 Microcontroller Documentation
 
   * [MCU STM32F429ZIT6 Arm® Cortex®‑M4](https://www.st.com/en/microcontrollers-microprocessors/stm32f429zi.html)
@@ -64,13 +75,13 @@ To download ARM documents in PDF format, use the download button shown in the pi
 
 -----
 
-## 2.2 Creating Your Bare-Metal Rust Project on Your Local Drive
+### 2.2 Creating Your Bare-Metal Rust Project on Your Local Drive
 
 Now that your environment is set up and you have your essential documentation, it's time to create the Rust project that will house your bare-metal application. It's good practice to organize your Rust projects, especially for embedded development. Consider creating a dedicated `rust` folder in your home directory (e.g., `~/workspace/rust/`) and placing all your Rust projects there. For larger projects or related embedded examples, you might also consider using a Cargo workspace to manage multiple crates within a single repository.
 
 For this guide, we'll start with a very basic cargo project and then configure it for our specific embedded target.
 
-### 2.2.1 Initialize the Rust Project
+#### 2.2.1 Initialize the Rust Project
 
 First, open your terminal and navigate to the directory where you want to create your project (e.g., `~/workspace/rust/`). Then, use `cargo new` to create a new Rust application. We'll call our project `stm32f429_blinky`:
 
@@ -105,7 +116,7 @@ edition = "2021"
 
 -----
 
-### 2.2.2 Initialize Git for Version Control
+#### 2.2.2 Initialize Git for Version Control
 
 It's a good practice to use version control from the very beginning of any project. Git is the most popular version control system, and it will help you track changes, experiment safely, and collaborate if needed.
 
@@ -146,11 +157,16 @@ Now you have a clean Rust project ready for embedded development, under version 
 
 -----
 
-## 2.3 Creating the Linker Script (memory.x)
+### 2.3 Creating the Linker Script (memory.x)
 
 The linker script tells the Rust compiler and linker where to place different parts of your compiled program (code, data, stack, heap) in the microcontroller's memory. Without it, the linker wouldn't know where to put your program, and it wouldn't run.
 
 To understand the memory layout of the STM32F429ZI, we refer to the **STM32F429xx Reference Manual (RM0090)**, specifically *Memory map* and *Embedded flash memory interface (Embedded flash memory in STM32F42xxx and STM32F43xxx)*.
+
+![STM32F429I-DISC1 Bench Demo](./images/memory_01.png)
+
+![STM32F429I-DISC1 Bench Demo](./images/memory_02.png)
+
 
 For the STM32F429ZI, the key memory regions are:
 
@@ -189,7 +205,7 @@ Explanation of `memory.x`:
 
 -----
 
-## 2.4 Configuring Cargo (.cargo/config.toml)
+### 2.4 Configuring Cargo (.cargo/config.toml)
 
 Finally, we need to tell Cargo how to build our project for the embedded target and how to use our custom linker script. Create a new directory named `.cargo` in the root of your project, and inside it, create a file named `config.toml`:
 
@@ -217,11 +233,11 @@ stm32f429_blinky/
 
 -----
 
-## 2.5 Implementing Custom Startup Code (src/startup\_stm32f429zi.rs)
+### 2.5 Implementing Custom Startup Code (src/startup_stm32f429zi.rs)
 
 For true bare-metal control, we will write our own startup code instead of relying on the `cortex-m-rt` crate. This gives us a deeper understanding of the microcontroller's boot process, including how the CPU initializes memory and sets up the interrupt vector table.
 
-### 2.5.1 Create startup file
+#### 2.5.1 Create startup file
 
 For the exact interrupt vector table, we refer to the **STM32F429xx Reference Manual (RM0090)**, specifically *Table 63. Vector table for STM32F42xxx and STM32F43xxx*.
 
@@ -235,7 +251,7 @@ Add the following Rust code to `src/startup_stm32f429zi.rs`:
 
 - [Link to startup file](../src/startup_stm32f429zi.rs)
 
-### 2.5.2 Modifying src/main.rs
+#### 2.5.2 Modifying src/main.rs
 
 Now, we need to adjust `src/main.rs` to work with our custom startup.
 
@@ -251,7 +267,7 @@ Replace its content with the following:
 
 -----
 
-## 2.6 Building Your Bare-Metal Project
+### 2.6 Building Your Bare-Metal Project
 
 Before we dive into writing the actual blinking logic, let's perform a test build to ensure all our configuration files (`Cargo.toml`, `memory.x`, `.cargo/config.toml`) and the custom startup code are correctly set up. This step will verify that Rust can compile your bare-metal project for the STM32F429ZI target without errors.
 
@@ -274,13 +290,13 @@ $ file target/thumbv7em-none-eabihf/release/stm32f429_blinky
 
 -----
 
-## 2.7 Flashing Your Bare-Metal Project with probe-rs
+### 2.7 Flashing Your Bare-Metal Project with probe-rs
 
 Now that you have successfully built your bare-metal Rust application into an executable ELF file, the next crucial step is to flash it onto your STM32F429I-DISC1 Discovery Kit. We will use `cargo flash` (which is part of the `probe-rs` toolset) for this purpose.
 
 Before flashing, it's often helpful to confirm that `probe-rs` correctly identifies your microcontroller.
 
-### 2.7.1 Listing Supported Microcontrollers
+#### 2.7.1 Listing Supported Microcontrollers
 
 You can view the entire list of microcontrollers supported by your `probe-rs` installation using the `probe-rs chip list` command:
 
@@ -296,7 +312,7 @@ $ probe-rs chip list | grep STM32F429
 
 You should see an entry like `STM32F429ZI` (or similar, depending on the exact variant). This confirms that `probe-rs` knows how to communicate with your chip.
 
-### 2.7.2 Flashing the Binary
+#### 2.7.2 Flashing the Binary
 
 With our STM32F429I-DISC1 board connected to the computer via the ST-LINK USB port, we can now flash our compiled binary.
 
@@ -306,11 +322,11 @@ $ cargo flash --chip STM32F429ZI
 
 -----
 
-## 2.8 Debugging Your Bare-Metal Project
+### 2.8 Debugging Your Bare-Metal Project
 
 After building and flashing your bare-metal project, the next logical step is to learn how to debug it. Debugging is essential for understanding program flow, inspecting variable values, and identifying issues that might not be apparent during compilation. We'll use `arm-none-eabi-gdb` in conjunction with `probe-rs` acting as a GDB server.
 
-### 2.8.1 Inspecting the Compiled Binary
+#### 2.8.1 Inspecting the Compiled Binary
 
 Before connecting the debugger, it's useful to inspect the generated ELF file. This can give you insights into the symbols (functions, global variables) and sections within your compiled program.
 
@@ -340,7 +356,7 @@ The compiled binary (ELF file) on my side is located at `/home/george/workspace/
     $ file /home/george/workspace/rust/stm32f429_blinky/target/thumbv7em-none-eabihf/debug/stm32f429_blinky
     ```
 
-### 2.8.2 Connecting GDB to Your Board via probe-rs
+#### 2.8.2 Connecting GDB to Your Board via probe-rs
 
 To debug, `arm-none-eabi-gdb` needs to connect to a GDB server that can communicate with your physical microcontroller. `probe-rs` can act as this GDB server.
 
@@ -357,7 +373,7 @@ $ arm-none-eabi-gdb /home/george/workspace/rust/stm32f429_blinky/target/thumbv7e
 target remote localhost:1337
 ```
 
-### 2.8.3 Basic GDB Debugging Commands
+#### 2.8.3 Basic GDB Debugging Commands
 
 Now that GDB is connected, you can start debugging:
 
@@ -406,15 +422,15 @@ To exit GDB, type `quit` or `q` and press Enter.
 
 -----
 
-## BONUS: Enhancing Bare-Metal Development with Rust Crates
+### 2.9 Enhancing Bare-Metal Development with Rust Crates
 
-### Core Embedded Libraries
+#### 2.9.1 Core Embedded Libraries
 
   * **cortex-m**: This is a fundamental crate that provides low-level, direct access to the ARM Cortex-M processor's core peripherals. It allows you to control features like the Nested Vectored Interrupt Controller (NVIC) for managing interrupts, the SysTick timer for creating delays, and other CPU-level functionalities. Think of it as the primary API for interacting with the brain of the microcontroller.
 
   * **cortex-m-rt**: This crate provides a minimal runtime environment for your bare-metal application. Its main jobs are to set up the interrupt vector table, initialize memory sections (`.data` and `.bss`) at startup, and define the entry point for your program. It ensures your Rust code starts correctly on the microcontroller after a reset.
 
-### Essential Utilities
+#### 2.9.2 Essential Utilities
 
   * **panic-halt**: In a standard application, a panic would print an error message and exit. On a microcontroller, there's no operating system to handle this. The `panic-halt` crate implements a simple panic handler that puts the microcontroller's core into an infinite loop if a panic occurs. This prevents undefined behavior and allows you to attach a debugger to see what went wrong.
 
@@ -444,7 +460,7 @@ stm32f4 = { version = "0.14.0", features = ["stm32f429"] }
 
 -----
 
-**Congratulations, you've reached a significant milestone\!**
+**Congratulations, you've reached a significant milestone!**
 
 In this part 2 of Rust for Embedded Systems: A Hands-On Journey with the STM32F429I-DISC1, you've learned the critical importance of documentation in embedded development, set up a bare-metal Rust project from scratch, configured its memory layout with a custom linker script, and implemented your own startup code and interrupt vector table. Most importantly, you've successfully built and flashed your first bare-metal Rust executable onto the STM32F429I-DISC1, and learned how to use `probe-rs` and GDB for basic debugging. This foundational knowledge gives you deep control over the microcontroller's boot process.
 
