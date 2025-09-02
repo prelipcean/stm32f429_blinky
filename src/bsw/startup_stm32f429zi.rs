@@ -2,6 +2,7 @@
 
 #![allow(clippy::empty_loop)]
 
+use core::arch::asm;
 use core::ptr;
 
 // Symbols provided by the linker script for memory initialization
@@ -16,9 +17,9 @@ unsafe extern "C" {
 // Interrupt vector table
 #[used]
 #[unsafe(link_section = ".isr_vector")]
-static VECTOR_TABLE: [Option<extern "C" fn()>; 107] = [
+static VECTOR_TABLE: [Option<extern "C" fn()>; 106] = [
     // Initial Stack Pointer (first entry, value provided by linker script)
-    None, // This entry is filled by the linker script with _start_of_stack
+    // This entry is filled by the linker script with _start_of_stack
     // Core Cortex-M Exceptions (Vector Table Position 1-15)
     Some(Reset_Handler),     // Position 1: Reset Handler (our custom entry point)
     Some(NMI_Handler),       // Position 2: Non-Maskable Interrupt
@@ -149,10 +150,25 @@ extern "C" fn NMI_Handler() {
     loop {}
 }
 
+#[unsafe(no_mangle)]
+extern "C" fn SystemInit() {
+    // This function can be used to perform system initialization tasks.
+    // For this example, we leave it empty.
+}
+
 // Reset handler: initializes memory and calls main
 #[unsafe(no_mangle)]
 extern "C" fn Reset_Handler() {
     unsafe {
+        // (Optional) Set stack pointer if not handled by linker/toolchain
+        asm!(
+            "ldr sp, =_start_of_stack",
+            options(nomem, nostack, preserves_flags)
+        );
+
+        // (Optional) Call SystemInit
+        SystemInit();
+
         // Copy .data section from flash to RAM
         let mut src: *const u32 = ptr::addr_of!(_sidata);
         let mut dest: *mut u32 = ptr::addr_of_mut!(_sdata);

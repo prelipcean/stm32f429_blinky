@@ -141,7 +141,7 @@ vim .gitignore
 ```
 
 Add the following lines to the `.gitignore` file:
-- [Link to project .gitignore file](../.gitignore)
+- [Link to project .gitignore file](../archive_part_02/.gitignore)
 
 
 Save and close the file.
@@ -185,7 +185,7 @@ vim memory.x
 
 Add the following content to `memory.x`:
 
-- [Link to project memory.x file](../memory.x)
+- [Link to project memory.x file](../archive_part_02/memory.x)
 
 Explanation of `memory.x`:
 
@@ -216,7 +216,7 @@ vim .cargo/config.toml
 
 Add the following content to `config.toml`:
 
-- [Link to .cargo config file](../.cargo/config.toml)
+- [Link to .cargo config file](../archive_part_02/.cargo/config.toml)
 
 The project structure should now look like this:
 
@@ -249,7 +249,7 @@ vim src/startup_stm32f429zi.rs
 
 Add the following Rust code to `src/startup_stm32f429zi.rs`:
 
-- [Link to startup file](../src/startup_stm32f429zi.rs)
+- [Link to startup file](../archive_part_02/src/startup_stm32f429zi.rs)
 
 #### 2.5.2 Modifying src/main.rs
 
@@ -263,7 +263,7 @@ vim src/main.rs
 
 Replace its content with the following:
 
-- [Link to main file](../src/main.rs)
+- [Link to main file](../archive_part_02/src/main.rs)
 
 -----
 

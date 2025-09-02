@@ -11,7 +11,7 @@
 **/mutants.out*/
 
 # IDEs
-# .vscode/
+.vscode/
 
 # OS
 .DS_Store
