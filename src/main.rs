@@ -7,9 +7,9 @@
 #![allow(clippy::empty_loop)]
 #![allow(dead_code)]
 
+use crate::app::led::*;
+use crate::app::system_clock::*;
 use core::panic::PanicInfo;
-
-use crate::app::led::{self, *};
 
 mod app;
 mod bsw;
@@ -20,6 +20,8 @@ mod bsw;
 /// This function is marked unsafe because it accesses a mutable static variable.
 #[unsafe(no_mangle)]
 fn main() -> ! {
+    system_clock_setup();
+    system_clock_output_pa8();
     led_init();
     led_on();
 

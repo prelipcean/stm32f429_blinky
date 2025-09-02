@@ -8,7 +8,7 @@
 // Reference: STM32F429 Reference Manual, section 8.4 (GPIO registers, page 284)
 // -----------------------------------------------------------------------------
 
-use crate::bsw::reg_mcu_stm32f429zi::*; // MCU register base addresses and constants
+// use crate::bsw::reg_mcu_stm32f429zi::*; // MCU register base addresses and constants
 use crate::bsw::reg_utils::*; // Register access helper functions
 
 // -----------------------------------------------------------------------------
@@ -111,6 +111,13 @@ pub enum PinState {
     Low,
     /// The pin state is toggled (from high to low, or from low to high).
     Toggle,
+}
+
+pub enum PinSpeed {
+    Low,
+    Medium,
+    High,
+    VeryHigh,
 }
 
 // -----------------------------------------------------------------------------
@@ -241,4 +248,44 @@ pub fn gpio_set_pin_state(port: u32, pin: u32, pin_state: PinState) {
 pub fn gpio_get_pin_state(port: u32, pin: u32) -> bool {
     let gpio_idr_addr = (port + GPIOX_IDR) as *mut u32;
     reg_read_bit(gpio_idr_addr, pin)
+}
+
+/// Sets the alternate function (AF) for a specific GPIO pin.
+///
+/// This configures the pin to use one of the STM32's alternate peripheral functions
+/// (such as timers, USART, SPI, etc). The alternate function number is written to
+/// the appropriate AFRL (pins 0-7) or AFRH (pins 8-15) register.
+///
+/// # Arguments
+/// * `port` - The base address of the GPIO port (e.g., `GPIOA_BASE`)
+/// * `pin`  - The pin number (0..15)
+/// * `af`   - The alternate function number (0..15)
+pub fn gpio_set_af(port: u32, pin: u32, af: u32) {
+    let gpio_afrl = (port + GPIOX_AFRL) as *mut u32;
+    let gpio_afrh = (port + GPIOX_AFRH) as *mut u32;
+
+    if pin < 8 {
+        reg_set_bits(gpio_afrl, af, pin * 4, 4);
+    } else {
+        reg_set_bits(gpio_afrh, af, (pin - 8) * 4, 4);
+    }
+}
+
+/// Sets the output speed for a specific GPIO pin.
+///
+/// This controls the slew rate of the pin, which can be important for high-frequency
+/// signals or to reduce EMI. The speed is set in the OSPEEDR register.
+///
+/// # Arguments
+/// * `port`  - The base address of the GPIO port
+/// * `pin`   - The pin number (0..15)
+/// * `speed` - The desired speed as a `PinSpeed` enum
+pub fn gpio_set_speed(port: u32, pin: u32, speed: PinSpeed) {
+    let gpio_ospeedr = (port + GPIOX_OSPEEDR) as *mut u32;
+    match speed {
+        PinSpeed::Low => reg_set_bits(gpio_ospeedr, 0b00, pin * 2, 2),
+        PinSpeed::Medium => reg_set_bits(gpio_ospeedr, 0b01, pin * 2, 2),
+        PinSpeed::High => reg_set_bits(gpio_ospeedr, 0b10, pin * 2, 2),
+        PinSpeed::VeryHigh => reg_set_bits(gpio_ospeedr, 0b11, pin * 2, 2),
+    }
 }
