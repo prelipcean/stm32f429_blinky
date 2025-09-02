@@ -2,8 +2,8 @@
 
 #![allow(clippy::empty_loop)]
 
-use core::ptr;
 use core::arch::asm;
+use core::ptr;
 
 // Symbols provided by the linker script for memory initialization
 unsafe extern "C" {
@@ -151,8 +151,7 @@ extern "C" fn NMI_Handler() {
 }
 
 #[unsafe(no_mangle)]
-extern "C" fn SystemInit()
-{
+extern "C" fn SystemInit() {
     // This function can be used to perform system initialization tasks.
     // For this example, we leave it empty.
 }
@@ -162,7 +161,10 @@ extern "C" fn SystemInit()
 extern "C" fn Reset_Handler() {
     unsafe {
         // (Optional) Set stack pointer if not handled by linker/toolchain
-        asm!("ldr sp, =_start_of_stack", options(nomem, nostack, preserves_flags));
+        asm!(
+            "ldr sp, =_start_of_stack",
+            options(nomem, nostack, preserves_flags)
+        );
 
         // (Optional) Call SystemInit
         SystemInit();

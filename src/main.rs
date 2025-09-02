@@ -9,8 +9,10 @@
 
 use core::panic::PanicInfo;
 
-mod bsw;
+use crate::app::led::{self, *};
+
 mod app;
+mod bsw;
 
 /// The main entry point for the application.
 ///
@@ -18,8 +20,10 @@ mod app;
 /// This function is marked unsafe because it accesses a mutable static variable.
 #[unsafe(no_mangle)]
 fn main() -> ! {
-    // This is where our application logic will go.
-    loop { }
+    led_init();
+    led_on();
+
+    loop {}
 }
 
 /// Panic handler for the application.

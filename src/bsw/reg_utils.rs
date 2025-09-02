@@ -8,7 +8,7 @@
 //! - Read or change a group of bits (bit fields)
 //!
 //! Important: Only use real hardware register addresses. Using a bad address can crash or freeze the MCU.
-//! 
+//!
 //! API overview
 //! - reg_assert_mask_fits
 //! - reg_read
@@ -44,8 +44,8 @@
 //! - reg_set_val_inplace
 //! - reg_read_val_inplace
 
-use core::ptr;
 use core::hint;
+use core::ptr;
 
 /// A type alias for a hardware register address (pointer to a 32‑bit register).
 /// Makes the intent of pointers clearer in code.
@@ -56,15 +56,19 @@ pub mod bit_masks {
     /// Create a mask with `n` consecutive 1 bits (from bit 0).
     /// n=0 -> 0, n=32 -> 0xFFFF_FFFF
     pub const fn mask_n_bits(n: u32) -> u32 {
-        if n >= 32 { 0xFFFF_FFFF } else { (1u32 << n) - 1 }
+        if n >= 32 {
+            0xFFFF_FFFF
+        } else {
+            (1u32 << n) - 1
+        }
     }
-    
+
     /// Create a mask with a single 1 at `position`.
     /// position >= 32 -> 0
     pub const fn single_bit(position: u32) -> u32 {
         if position >= 32 { 0 } else { 1u32 << position }
     }
-    
+
     /// Predefined 4‑bit masks (nibbles)
     pub const NIBBLE_0: u32 = 0x0000000F;
     pub const NIBBLE_1: u32 = 0x000000F0;
@@ -74,13 +78,13 @@ pub mod bit_masks {
     pub const NIBBLE_5: u32 = 0x00F00000;
     pub const NIBBLE_6: u32 = 0x0F000000;
     pub const NIBBLE_7: u32 = 0xF0000000;
-    
+
     /// Predefined byte masks
     pub const BYTE_0: u32 = 0x000000FF;
     pub const BYTE_1: u32 = 0x0000FF00;
     pub const BYTE_2: u32 = 0x00FF0000;
     pub const BYTE_3: u32 = 0xFF000000;
-    
+
     /// Predefined half‑word masks (16 bits)
     pub const HALF_WORD_0: u32 = 0x0000FFFF;
     pub const HALF_WORD_1: u32 = 0xFFFF0000;
@@ -150,9 +154,15 @@ pub unsafe fn reg_write(addr: RegisterAddress, value: u32) {
 /// reg_set_bits(0x4800_0000 as RegisterAddress, 0b10, 4, 2);
 /// ```
 pub fn reg_set_bits(reg_addr: RegisterAddress, new_bits_val: u32, bit_position: u32, n_bits: u32) {
-    assert!(n_bits > 0 && n_bits <= 32, "n_bits must be between 1 and 32");
+    assert!(
+        n_bits > 0 && n_bits <= 32,
+        "n_bits must be between 1 and 32"
+    );
     assert!(bit_position < 32, "bit_position must be less than 32");
-    assert!(bit_position + n_bits <= 32, "bit range exceeds register size");
+    assert!(
+        bit_position + n_bits <= 32,
+        "bit range exceeds register size"
+    );
 
     // Ensure the provided value fits in the number of bits requested.
     let field_mask = bit_masks::mask_n_bits(n_bits);
@@ -186,7 +196,7 @@ pub fn reg_set_bits(reg_addr: RegisterAddress, new_bits_val: u32, bit_position: 
 /// ```
 pub fn reg_set_bit(reg_addr: RegisterAddress, bit_position: u32, bit_val: bool) {
     assert!(bit_position < 32, "bit_position must be less than 32");
-    
+
     unsafe {
         let reg_value = reg_read(reg_addr);
         let updated_value = if bit_val {
@@ -235,7 +245,7 @@ pub fn reg_set_val(reg_addr: RegisterAddress, new_reg_val: u32) {
 /// ```
 pub fn reg_read_bit(reg_addr: RegisterAddress, bit_position: u32) -> bool {
     assert!(bit_position < 32, "bit_position must be less than 32");
-    
+
     unsafe {
         let reg_value = reg_read(reg_addr);
         (reg_value & (1u32 << bit_position)) != 0
@@ -261,9 +271,15 @@ pub fn reg_read_bit(reg_addr: RegisterAddress, bit_position: u32) -> bool {
 /// let value = reg_read_bits(0x4800_0000 as RegisterAddress, 8, 4);
 /// ```
 pub fn reg_read_bits(reg_addr: RegisterAddress, bit_position: u32, n_bits: u32) -> u32 {
-    assert!(n_bits > 0 && n_bits <= 32, "n_bits must be between 1 and 32");
+    assert!(
+        n_bits > 0 && n_bits <= 32,
+        "n_bits must be between 1 and 32"
+    );
     assert!(bit_position < 32, "bit_position must be less than 32");
-    assert!(bit_position + n_bits <= 32, "bit range exceeds register size");
+    assert!(
+        bit_position + n_bits <= 32,
+        "bit range exceeds register size"
+    );
 
     unsafe {
         let reg_value = reg_read(reg_addr);
@@ -304,7 +320,7 @@ pub fn reg_set_bit_high(reg_addr: RegisterAddress, bit_position: u32) {
 pub fn reg_clr_val(reg_addr: RegisterAddress, clear_mask: u32, bit_position: u32) {
     assert!(bit_position < 32, "bit_position must be less than 32");
     reg_assert_mask_fits(clear_mask, bit_position);
-    
+
     unsafe {
         let reg_value = reg_read(reg_addr);
         let updated_value = reg_value & !((clear_mask) << bit_position);
@@ -331,7 +347,12 @@ pub fn reg_clr_val(reg_addr: RegisterAddress, clear_mask: u32, bit_position: u32
 /// // Write 0b101 into bits 4..=6 (mask = 0b111)
 /// reg_set_val_masked(0x4800_0000 as RegisterAddress, 0b101, 0b111, 4);
 /// ```
-pub fn reg_set_val_masked(reg_addr: RegisterAddress, new_value: u32, set_mask: u32, bit_position: u32) {
+pub fn reg_set_val_masked(
+    reg_addr: RegisterAddress,
+    new_value: u32,
+    set_mask: u32,
+    bit_position: u32,
+) {
     assert!(bit_position < 32, "bit_position must be less than 32");
     reg_assert_mask_fits(set_mask, bit_position);
 
@@ -340,7 +361,7 @@ pub fn reg_set_val_masked(reg_addr: RegisterAddress, new_value: u32, set_mask: u
         (new_value & !set_mask) == 0,
         "new_value has bits outside set_mask"
     );
-    
+
     unsafe {
         // Single read‑modify‑write with proper masking
         let reg_value = reg_read(reg_addr);
@@ -371,7 +392,7 @@ pub fn reg_set_val_masked(reg_addr: RegisterAddress, new_value: u32, set_mask: u
 pub fn reg_read_val_masked(reg_addr: RegisterAddress, read_mask: u32, bit_position: u32) -> u32 {
     assert!(bit_position < 32, "bit_position must be less than 32");
     reg_assert_mask_fits(read_mask, bit_position);
-    
+
     unsafe {
         let reg_value = reg_read(reg_addr);
         (reg_value >> bit_position) & read_mask
@@ -393,7 +414,7 @@ pub fn reg_read_val_masked(reg_addr: RegisterAddress, read_mask: u32, bit_positi
 /// ```
 pub fn reg_toggle_bit(reg_addr: RegisterAddress, bit_position: u32) {
     assert!(bit_position < 32, "bit_position must be less than 32");
-    
+
     unsafe {
         let reg_value = reg_read(reg_addr);
         let updated_value = reg_value ^ (1u32 << bit_position);
@@ -419,7 +440,7 @@ pub fn reg_toggle_bit(reg_addr: RegisterAddress, bit_position: u32) {
 pub fn reg_toggle_bits(reg_addr: RegisterAddress, toggle_mask: u32, bit_position: u32) {
     assert!(bit_position < 32, "bit_position must be less than 32");
     reg_assert_mask_fits(toggle_mask, bit_position);
-    
+
     unsafe {
         let reg_value = reg_read(reg_addr);
         let updated_value = reg_value ^ (toggle_mask << bit_position);
@@ -449,8 +470,8 @@ pub fn reg_toggle_bits(reg_addr: RegisterAddress, toggle_mask: u32, bit_position
 ///     (val & !0xF0) | (((field + 1) & 0xF) << 4)
 /// });
 /// ```
-pub fn reg_modify<F>(reg_addr: RegisterAddress, modify_fn: F) 
-where 
+pub fn reg_modify<F>(reg_addr: RegisterAddress, modify_fn: F)
+where
     F: FnOnce(u32) -> u32,
 {
     unsafe {
@@ -482,11 +503,16 @@ where
 /// let ok = reg_wait_bit(0x4800_0000 as RegisterAddress, 0, true, 1000);
 /// ```
 #[must_use]
-pub fn reg_wait_bit(reg_addr: RegisterAddress, bit_position: u32, expected_value: bool, timeout_cycles: u32) -> bool {
+pub fn reg_wait_bit(
+    reg_addr: RegisterAddress,
+    bit_position: u32,
+    expected_value: bool,
+    timeout_cycles: u32,
+) -> bool {
     assert!(bit_position < 32, "bit_position must be less than 32");
-    
+
     let mut cycles = 0;
-    
+
     loop {
         if reg_read_bit(reg_addr, bit_position) == expected_value {
             return true;
@@ -521,11 +547,17 @@ pub fn reg_wait_bit(reg_addr: RegisterAddress, bit_position: u32, expected_value
 /// let ok = reg_wait_bits(0x4800_0000 as RegisterAddress, 0b101, 0b111, 4, 500);
 /// ```
 #[must_use]
-pub fn reg_wait_bits(reg_addr: RegisterAddress, expected_value: u32, mask: u32, bit_position: u32, timeout_cycles: u32) -> bool {
+pub fn reg_wait_bits(
+    reg_addr: RegisterAddress,
+    expected_value: u32,
+    mask: u32,
+    bit_position: u32,
+    timeout_cycles: u32,
+) -> bool {
     assert!(bit_position < 32, "bit_position must be less than 32");
-    
+
     let mut cycles = 0;
-    
+
     loop {
         let current_value = reg_read_val_masked(reg_addr, mask, bit_position);
         if current_value == expected_value {
@@ -563,7 +595,7 @@ pub fn reg_wait_bits(reg_addr: RegisterAddress, expected_value: u32, mask: u32, 
 #[must_use]
 pub fn reg_test_and_set(reg_addr: RegisterAddress, bit_position: u32) -> bool {
     assert!(bit_position < 32, "bit_position must be less than 32");
-    
+
     unsafe {
         let reg_value = reg_read(reg_addr);
         let bit_was_set = (reg_value & (1u32 << bit_position)) != 0;
@@ -595,7 +627,7 @@ pub fn reg_test_and_set(reg_addr: RegisterAddress, bit_position: u32) -> bool {
 #[must_use]
 pub fn reg_test_and_clear(reg_addr: RegisterAddress, bit_position: u32) -> bool {
     assert!(bit_position < 32, "bit_position must be less than 32");
-    
+
     unsafe {
         let reg_value = reg_read(reg_addr);
         let bit_was_set = (reg_value & (1u32 << bit_position)) != 0;
