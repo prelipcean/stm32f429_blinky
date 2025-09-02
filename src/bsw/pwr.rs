@@ -9,14 +9,14 @@
 // -----------------------------------------------------------------------------
 
 use crate::bsw::reg_mcu_stm32f429zi::*; // MCU register base addresses and constants
-use crate::bsw::reg_utils::*;           // Register access helper functions
+use crate::bsw::reg_utils::*; // Register access helper functions
 
 // -----------------------------------------------------------------------------
 // PWR Register Offsets (relative to PWR base address)
 // -----------------------------------------------------------------------------
 // These offsets are added to the base address of the PWR peripheral to access
 // specific registers.
-pub const PWR_CR: u32 = 0x00;  // Power control register
+pub const PWR_CR: u32 = 0x00; // Power control register
 pub const PWR_CSR: u32 = 0x04; // Power control/status register
 
 // -----------------------------------------------------------------------------

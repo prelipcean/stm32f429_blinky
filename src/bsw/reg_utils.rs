@@ -18,9 +18,9 @@
 //! - reg_set_val
 //! - reg_read_bit
 //! - reg_read_bits
-//! - reg_clr_bit
+//! - reg_clear_bit
 //! - reg_set_bit_high
-//! - reg_clr_val
+//! - reg_clear_val
 //! - reg_set_val_masked
 //! - reg_read_val_masked
 //! - reg_toggle_bit
@@ -37,10 +37,10 @@
 //! - reg_write_inplace
 //! - reg_read_inplace
 //! - reg_set_bit_inplace
-//! - reg_clr_bit_inplace
+//! - reg_clear_bit_inplace
 //! - reg_toggle_bit_inplace
 //! - reg_read_bit_inplace
-//! - reg_clr_val_inplace
+//! - reg_clear_val_inplace
 //! - reg_set_val_inplace
 //! - reg_read_val_inplace
 
@@ -291,7 +291,7 @@ pub fn reg_read_bits(reg_addr: RegisterAddress, bit_position: u32, n_bits: u32) 
 /// Clear a single bit (set it to 0).
 ///
 /// Convenience wrapper for `reg_set_bit(reg_addr, bit_position, false)`.
-pub fn reg_clr_bit(reg_addr: RegisterAddress, bit_position: u32) {
+pub fn reg_clear_bit(reg_addr: RegisterAddress, bit_position: u32) {
     reg_set_bit(reg_addr, bit_position, false);
 }
 
@@ -315,9 +315,9 @@ pub fn reg_set_bit_high(reg_addr: RegisterAddress, bit_position: u32) {
 /// Example
 /// ```ignore
 /// // Clear bits 4, 5, and 6 (mask = 0b111)
-/// reg_clr_val(0x4800_0000 as RegisterAddress, 0b111, 4);
+/// reg_clear_val(0x4800_0000 as RegisterAddress, 0b111, 4);
 /// ```
-pub fn reg_clr_val(reg_addr: RegisterAddress, clear_mask: u32, bit_position: u32) {
+pub fn reg_clear_val(reg_addr: RegisterAddress, clear_mask: u32, bit_position: u32) {
     assert!(bit_position < 32, "bit_position must be less than 32");
     reg_assert_mask_fits(clear_mask, bit_position);
 
@@ -722,7 +722,7 @@ pub fn reg_set_bit_inplace(reg: &mut u32, pos: u32) {
 }
 
 #[inline(always)]
-pub fn reg_clr_bit_inplace(reg: &mut u32, pos: u32) {
+pub fn reg_clear_bit_inplace(reg: &mut u32, pos: u32) {
     assert!(pos < 32, "bit_position must be less than 32");
     unsafe { core::ptr::write_volatile(reg, core::ptr::read_volatile(reg) & !(1u32 << pos)) }
 }
@@ -740,7 +740,7 @@ pub fn reg_read_bit_inplace(reg: &u32, pos: u32) -> bool {
 }
 
 #[inline(always)]
-pub fn reg_clr_val_inplace(reg: &mut u32, clrmask: u32, pos: u32) {
+pub fn reg_clear_val_inplace(reg: &mut u32, clrmask: u32, pos: u32) {
     assert!(pos < 32, "bit_position must be less than 32");
     reg_assert_mask_fits(clrmask, pos);
     unsafe {

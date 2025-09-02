@@ -9,6 +9,8 @@
 
 use crate::app::led::*;
 use crate::app::system_clock::*;
+use crate::app::systick_delay::*;
+
 use core::panic::PanicInfo;
 
 mod app;
@@ -21,11 +23,14 @@ mod bsw;
 #[unsafe(no_mangle)]
 fn main() -> ! {
     system_clock_setup();
-    system_clock_output_pa8();
+    systick_init();
     led_init();
-    led_on();
+    system_clock_output_pa8();
 
-    loop {}
+    loop {
+        led_toggle();
+        delay_ms(1000);
+    }
 }
 
 /// Panic handler for the application.
